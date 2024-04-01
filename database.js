@@ -27,20 +27,6 @@ export async function getMenuItems(resolve) {
   });
 }
 
-// export function saveMenuItems(menuItems) {
-//   db.transaction((tx) => {
-//     // 2. Implement a single SQL statement to save all menu data in a table called menuitems.
-//     // Check the createTable() function above to see all the different columns the table has
-//     // Hint: You need a SQL statement to insert multiple rows at once.
-//     menuItems.map(({ id, title, price, category }) => {
-//       tx.executeSql(
-//         "insert into menuitems (id, title, price, category) values (?,?,?,?)",
-//         [id, title, price, category]
-//       );
-//     });
-//   });
-// }
-
 export const saveMenuItems = (menuItems) => {
   return new Promise((resolve, reject) => {
     db.transaction(
@@ -81,8 +67,13 @@ export const saveMenuItems = (menuItems) => {
  *
  */
 export async function filterByQueryAndCategories(query, activeCategories) {
-  return new Promise((resolve, reject) => {
-    resolve(SECTION_LIST_MOCK_DATA);
-    // resolve(getMenuItems());
+  return new Promise((resolve) => {
+    const query = "select * from menuitems where category IN (?, ?, ?)";
+    db.transaction((tx) => {
+      tx.executeSql(query, activeCategories, (_, { rows }) => {
+        console.log(rows._array);
+        resolve(rows._array);
+      });
+    });
   });
 }
