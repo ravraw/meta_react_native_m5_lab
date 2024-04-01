@@ -68,12 +68,18 @@ export const saveMenuItems = (menuItems) => {
  */
 export async function filterByQueryAndCategories(query, activeCategories) {
   return new Promise((resolve) => {
-    const query = "select * from menuitems where category IN (?, ?, ?)";
+    const selectQuery =
+      "select * from menuitems where title LIKE ? AND category IN (?, ?, ?)";
+    const queryString = `%${query}%`;
+
     db.transaction((tx) => {
-      tx.executeSql(query, activeCategories, (_, { rows }) => {
-        console.log(rows._array);
-        resolve(rows._array);
-      });
+      tx.executeSql(
+        selectQuery,
+        [queryString, ...activeCategories],
+        (_, { rows }) => {
+          resolve(rows._array);
+        }
+      );
     });
   });
 }
