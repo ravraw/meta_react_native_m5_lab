@@ -40,25 +40,35 @@ export default function App() {
 
   const fetchData = async () => {
     // 1. Implement this function
-
     // Fetch the menu from the API_URL endpoint. You can visit the API_URL in your browser to inspect the data returned
     // The category field comes as an object with a property called "title". You just need to get the title value and set it under the key "category".
     // So the server response should be slighly transformed in this function (hint: map function) to flatten out each menu item in the array,
-    return [];
+    let menuItems = [];
+    try {
+      const response = await fetch(API_URL);
+      const { menu } = await response.json();
+      menuItems = menu.map((item) => ({
+        ...item,
+        category: item.category.title,
+      }));
+    } catch (e) {
+      console.log(e);
+    }
+    return menuItems;
   };
 
   useEffect(() => {
     (async () => {
       try {
         await createTable();
-        let menuItems = await getMenuItems();
+        let menuItems = await getMenuItems(setData);
 
         // The application only fetches the menu data once from a remote URL
         // and then stores it into a SQLite database.
         // After that, every application restart loads the menu from the database
         if (!menuItems.length) {
           const menuItems = await fetchData();
-          saveMenuItems(menuItems);
+          await saveMenuItems(menuItems);
         }
 
         const sectionListData = getSectionListData(menuItems);
