@@ -66,7 +66,6 @@ export default function App() {
         // The application only fetches the menu data once from a remote URL
         // and then stores it into a SQLite database.
         // After that, every application restart loads the menu from the database
-        console.log("Menu items length - ", menuItems.length);
         if (!menuItems.length) {
           const menuItems = await fetchData();
           await saveMenuItems(menuItems);
